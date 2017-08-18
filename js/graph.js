@@ -1,12 +1,12 @@
-var pie = new d3pie(document.getElementById("pieChart"), {
+var pieData = {
     "header": {
         "title": {
-            "text": "Programming Languages",
+            "text": "Title",
             "fontSize": 24,
             "font": "Arial"
         },
         "subtitle": {
-            "text": "Bytes of Language",
+            "text": "Subtitle",
             "color": "#999999",
             "fontSize": 12,
             "font": "Arial"
@@ -24,29 +24,28 @@ var pie = new d3pie(document.getElementById("pieChart"), {
         "pieOuterRadius": "85%"
     },
     "data": {
-        "sortOrder": "label-asc",
+        "sortOrder": "value-asc",
         "content": [
             {
                 "label": "Test1",
-                "value": 100,
-                "color": "#2383c1"
+                "value": 123,
+                "color": "#e65414"
             },
             {
                 "label": "Test2",
-                "value": 200,
-                "color": "#64a61f"
+                "value": 456,
+                "color": "#8b6834"
             },
             {
                 "label": "Test3",
-                "value": 400,
-                "color": "#7b6788"
+                "value": 789,
+                "color": "#248838"
             }
         ]
     },
     "labels": {
         "outer": {
-            "format": "label-value2",
-            "pieDistance": 20
+            "pieDistance": 32
         },
         "inner": {
             "hideWhenLessThanPercentage": 3
@@ -70,11 +69,15 @@ var pie = new d3pie(document.getElementById("pieChart"), {
         }
     },
     "effects": {
+        "load": {
+            "effect": "none"
+        },
         "pullOutSegmentOnClick": {
             "effect": "linear",
             "speed": 400,
             "size": 8
-        }
+        },
+        "highlightSegmentOnMouseover": false
     },
     "misc": {
         "gradient": {
@@ -82,16 +85,77 @@ var pie = new d3pie(document.getElementById("pieChart"), {
             "percentage": 100
         }
     }
+};
+var pie = new d3pie("pieChart", pieData);
+
+function randomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+$.ajaxSetup({
+    headers: {
+        'Authorization': 'token 482bcf5b7604374578cfff6c0d5f0f6ead55e5cd'
+    }
 });
+
+var languagesMap = {};
 
 function go() {
     var username = $('#username').val();
 
-    $.getJSON('https://api.github.com/users/' + username + '/repos', function(data) {
-        data.forEach(function(obj) {
-            $.getJSON(obj.languages_url, function(languages) {
-                console.log(languages);
+    var length;
+    var count = 0;
+
+    // get all data about the user
+    $.getJSON('https://api.github.com/users/' + username + '/repos', function (data) {
+        // iterate through that data
+        length = data.length;
+
+        data.forEach(function (obj) {
+            // get languages for an individual repository
+            $.getJSON(obj.languages_url, function (languages) {
+                // iterate through an individual repository's languages and add them to the final map
+                Object.keys(languages).forEach(function (key) {
+                    if (!languagesMap.hasOwnProperty(key)) {
+                        languagesMap[key] = languages[key];
+                    } else {
+                        languagesMap[key] += languages[key];
+                    }
+                });
+
+                count++;
             });
         });
     });
+
+    var checkForCompletion = setInterval(function () {
+        if (count === length) {
+            clearInterval(checkForCompletion);
+            afterCompletion();
+        }
+    }, 50);
+}
+
+function afterCompletion() {
+    var content = [];
+
+    Object.keys(languagesMap).forEach(function (key) {
+        content.push({
+            "label": key,
+            "value": languagesMap[key],
+            "color": randomColor()
+        });
+    });
+
+    pieData.data.content = content;
+
+    console.log(pieData);
+
+    pie.destroy();
+    pie = new d3pie("pieChart", pieData);
 }
