@@ -1,3 +1,13 @@
-#pieChart, #belowPieChart {
+body {
+    font-family: Arial, sans-serif;
+}
+
+div {
     text-align: center;
+}
+
+#invalidUsername {
+    color: red;
+    padding: 5px;
+    display: none;
 }

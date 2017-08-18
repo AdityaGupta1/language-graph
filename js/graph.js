@@ -103,16 +103,27 @@ var languagesMap = {};
 var username;
 
 function go() {
+    $("#invalidUsername").hide();
+
      languagesMap = {};
      username = $('#username').val();
 
     var length;
     var count = 0;
 
+    var checkForCompletion;
+
     // get all data about the user
     $.getJSON("https://api.github.com/users/" + username + "/repos", function (data) {
         // iterate through that data
         length = data.length;
+
+        if (length === 0) {
+            // invalid username
+            $("#invalidUsername").show();
+            clearInterval(checkForCompletion);
+            return;
+        }
 
         data.forEach(function (obj) {
             // get languages for an individual repository
@@ -129,9 +140,13 @@ function go() {
                 count++;
             });
         });
+    }).fail(function() {
+        // invalid username
+        $("#invalidUsername").show();
+        clearInterval(checkForCompletion);
     });
 
-    var checkForCompletion = setInterval(function () {
+    checkForCompletion = setInterval(function () {
         if (count === length) {
             clearInterval(checkForCompletion);
             afterCompletion();
