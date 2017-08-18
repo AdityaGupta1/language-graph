@@ -1,12 +1,21 @@
+function randomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 var pieData = {
     "header": {
         "title": {
-            "text": "Title",
+            "text": "Programming Languages",
             "fontSize": 24,
             "font": "Arial"
         },
         "subtitle": {
-            "text": "Subtitle",
+            "text": "Bytes of code written in each language",
             "color": "#999999",
             "fontSize": 12,
             "font": "Arial"
@@ -25,21 +34,16 @@ var pieData = {
     },
     "data": {
         "sortOrder": "value-asc",
+        "smallSegmentGrouping": {
+            "enabled": true,
+            "value": 2.5,
+            "label": "Other"
+        },
         "content": [
             {
-                "label": "Test1",
-                "value": 123,
-                "color": "#e65414"
-            },
-            {
-                "label": "Test2",
-                "value": 456,
-                "color": "#8b6834"
-            },
-            {
-                "label": "Test3",
-                "value": 789,
-                "color": "#248838"
+                "label": "Pie Chart",
+                "value": 1,
+                "color": randomColor()
             }
         ]
     },
@@ -70,12 +74,13 @@ var pieData = {
     },
     "effects": {
         "load": {
-            "effect": "none"
+            "effect": "default",
+            "speed": 400
         },
         "pullOutSegmentOnClick": {
             "effect": "linear",
             "speed": 400,
-            "size": 8
+            "size": 16
         },
         "highlightSegmentOnMouseover": false
     },
@@ -88,31 +93,24 @@ var pieData = {
 };
 var pie = new d3pie("pieChart", pieData);
 
-function randomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
-
 $.ajaxSetup({
     headers: {
-        'Authorization': 'token 482bcf5b7604374578cfff6c0d5f0f6ead55e5cd'
+        "Authorization": "token 482bcf5b7604374578cfff6c0d5f0f6ead55e5cd"
     }
 });
 
 var languagesMap = {};
+var username;
 
 function go() {
-    var username = $('#username').val();
+     languagesMap = {};
+     username = $('#username').val();
 
     var length;
     var count = 0;
 
     // get all data about the user
-    $.getJSON('https://api.github.com/users/' + username + '/repos', function (data) {
+    $.getJSON("https://api.github.com/users/" + username + "/repos", function (data) {
         // iterate through that data
         length = data.length;
 
@@ -153,8 +151,7 @@ function afterCompletion() {
     });
 
     pieData.data.content = content;
-
-    console.log(pieData);
+    pieData.header.title.text = username + "'s Programming Languages";
 
     pie.destroy();
     pie = new d3pie("pieChart", pieData);
