@@ -111,7 +111,7 @@ function go() {
     var length;
     var count = 0;
 
-    var checkForCompletion;
+    var updateCompletion;
 
     // get all data about the user
     $.getJSON("https://api.github.com/users/" + username + "/repos", function (data) {
@@ -121,7 +121,7 @@ function go() {
         if (length === 0) {
             // invalid username
             $("#invalidUsername").show();
-            clearInterval(checkForCompletion);
+            clearInterval(updateCompletion);
             return;
         }
 
@@ -143,12 +143,19 @@ function go() {
     }).fail(function() {
         // invalid username
         $("#invalidUsername").show();
-        clearInterval(checkForCompletion);
+        clearInterval(updateCompletion);
     });
 
-    checkForCompletion = setInterval(function () {
+    updateCompletion = setInterval(function () {
+        if (length === 0 || length === null) {
+            return;
+        }
+
+        var loadCompletion = 100 * count / length;
+        $("#progress").attr("value", loadCompletion.toString());
+
         if (count === length) {
-            clearInterval(checkForCompletion);
+            clearInterval(updateCompletion);
             afterCompletion();
         }
     }, 50);
@@ -165,8 +172,13 @@ function afterCompletion() {
         });
     });
 
+    var concat = "'s Programming Languages";
+    if (username.endsWith("s")) {
+        concat = "' Programming Languages"
+    }
+
     pieData.data.content = content;
-    pieData.header.title.text = username + "'s Programming Languages";
+    pieData.header.title.text = username + concat;
 
     pie.destroy();
     pie = new d3pie("pieChart", pieData);
