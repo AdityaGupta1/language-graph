@@ -161,15 +161,28 @@ function go() {
     }, 50);
 }
 
+var defaultTable =
+    "<tr>" +
+        "<td class=\"th\">Language</td>" +
+        "<td class=\"th\">Bytes</th>" +
+    "</td>";
+
 function afterCompletion() {
     var content = [];
-
+    var table = defaultTable;
+    
     Object.keys(languagesMap).forEach(function (key) {
         content.push({
             "label": key,
             "value": languagesMap[key],
             "color": randomColor()
         });
+
+        table = table +
+            "<tr>" +
+                "<td>" + key + "</td>" +
+                "<td>" + languagesMap[key] + "</td>" +
+            "</tr>";
     });
 
     var concat = "'s Programming Languages";
@@ -182,4 +195,6 @@ function afterCompletion() {
 
     pie.destroy();
     pie = new d3pie("pieChart", pieData);
+
+    $("#languageTable").html(table);
 }
