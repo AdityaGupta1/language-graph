@@ -170,7 +170,7 @@ var defaultTable =
 function afterCompletion() {
     var content = [];
     var table = defaultTable;
-    
+
     Object.keys(languagesMap).forEach(function (key) {
         content.push({
             "label": key,

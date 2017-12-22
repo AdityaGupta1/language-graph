@@ -16,22 +16,21 @@
 </head>
 
 <body>
-<div id="data">
     <div id="pieChart"></div>
+    <script src="js/graph.js"></script>
+    <div id="belowPieChart">
+        <input id="username" type="text" placeholder="GitHub username">
+        <button onclick="go()">Graph it</button>
+        <br><progress id="progress" value="0" max="100"></progress>
+    </div>
+    <div id="invalidUsername">Invalid username!</div>
+    <br>
     <table id="languageTable">
         <tr>
             <td class="th">Language</td>
             <td class="th">Bytes</td>
         </tr>
     </table>
-</div>
-<script src="js/graph.js"></script>
-<div id="belowPieChart">
-    <input id="username" type="text" placeholder="GitHub username">
-    <button onclick="go()">Graph it</button>
-    <br><progress id="progress" value="0" max="100"></progress>
-</div>
-<div id="invalidUsername">Invalid username!</div>
 </body>
 
 </html>

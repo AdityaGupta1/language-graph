@@ -21,10 +21,11 @@ td, .th {
     border-bottom: 1px solid gray;
 }
 
-#data {
-    display: flex;
-}
-
 #belowPieChart {
     text-align: center;
+}
+
+#languageTable {
+    margin-left:auto; 
+    margin-right:auto;
 }
